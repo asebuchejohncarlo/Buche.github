@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Michurukia Car— Shooting Stars Background</title>
+  <meta name="description" content="Car-themed website demo with a moving shooting-star background and an accessible, validated form." />
+  <style>
+    :root{
+      --bg:#071428; /* deep night */
+      --accent:#ff7a18; /* sunset orange */
+      --accent2:#06b6d4; /* cyan */
+      --card: rgba(255,255,255,0.04);
+      --glass: rgba(255,255,255,0.06);
+      --text:#eaf6ff;
+      --muted: rgba(234,246,255,0.7);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial;
+      background:var(--bg);
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      overflow-x:hidden;
+    }
+
+    /* Shooting star background layer */
+    .sky{
+      position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden;
+      background: radial-gradient(ellipse at 20% 10%, rgba(6,11,31,0.5) 0%, transparent 40%),
+                  linear-gradient(180deg, rgba(4,8,18,0.6), rgba(2,6,11,0.65));
+    }
+    /* create many shooting stars with pseudo elements inside container */
+    .shooting-star{
+      position:absolute; top:-10vh; left:-10vw; width:2px; height:2px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.95), rgba(255,255,255,0.3));
+      border-radius:50%;
+      box-shadow: 0 0 8px rgba(255,255,255,0.9);
+      transform: translate3d(0,0,0) rotate(-25deg) scaleX(8);
+      opacity:0;
+    }
+    /* multiple stars using :nth-child with varied animation timings */
+    .sky .star{ position:absolute; width:2px; height:2px; background:transparent; }
+
+    /* We'll place 12 shooting stars positioned off-screen and animate them across */
+    .star--1{ left:10%; top:5%; animation:shoot 5s linear 0.3s infinite; }
+    .star--2{ left:40%; top:12%; animation:shoot 7s linear 1.6s infinite; }
+    .star--3{ left:75%; top:8%; animation:shoot 6s linear 0.5s infinite; }
+    .star--4{ left:20%; top:30%; animation:shoot 8s linear 2.1s infinite; }
+    .star--5{ left:55%; top:28%; animation:shoot 6.5s linear 0.9s infinite; }
+    .star--6{ left:85%; top:25%; animation:shoot 5.8s linear 1.2s infinite; }
+    .star--7{ left:5%; top:55%; animation:shoot 9s linear 2.8s infinite; }
+    .star--8{ left:30%; top:60%; animation:shoot 7.5s linear 1.1s infinite; }
+    .star--9{ left:60%; top:58%; animation:shoot 6.2s linear 2.6s infinite; }
+    .star--10{ left:80%; top:55%; animation:shoot 8.2s linear 0.7s infinite; }
+    .star--11{ left:50%; top:75%; animation:shoot 6.9s linear 1.9s infinite; }
+    .star--12{ left:15%; top:80%; animation:shoot 7.2s linear 0.2s infinite; }
+
+    /* visual of the star tail using a pseudo element */
+    .star::before{
+      content:''; position:absolute; right:0; top:50%;
+      height:2px; width:140px; transform-origin:right center; transform:rotate(-25deg) translateY(-50%);
+      background: linear-gradient(90deg, rgba(255,255,255,0.9), rgba(255,255,255,0.05));
+      filter: blur(1px);
+      opacity:0.9;
+    }
+
+    @keyframes shoot{
+      0%{ opacity:0; transform: translate3d(0,0,0) scaleX(0.2); }
+      10%{ opacity:1; }
+      100%{ opacity:0; transform: translate3d(-120vw,120vh,0) scaleX(1); }
+    }
+
+    /* subtle parallax stars (small dots) */
+    .stars-layer{
+      position:absolute; inset:0; z-index:0; pointer-events:none; opacity:0.35;
+      background-image: radial-gradient(circle at 10% 20%, rgba(255,255,255,0.8) 1px, transparent 2px),
+                        radial-gradient(circle at 50% 40%, rgba(255,255,255,0.5) 1px, transparent 2px),
+                        radial-gradient(circle at 80% 70%, rgba(255,255,255,0.35) 1px, transparent 2px);
+      background-size: 200px 200px, 140px 140px, 260px 260px;
+      mix-blend-mode: screen;
+      transform: translateZ(0);
+      animation: drift 60s linear infinite;
+    }
+    @keyframes drift{ from{transform:translateY(0)} to{transform:translateY(-200px)} }
+
+    /* page layout */
+    header{
+      position:relative; z-index:2; padding:28px 20px 8px; display:flex; align-items:center; gap:18px;
+    }
+    .logo{
+      width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));
+      display:grid; place-items:center; box-shadow:0 6px 20px rgba(0,0,0,0.6);
+    }
+    .logo svg{width:36px;height:36px}
+    .brand{font-weight:700;font-size:1.1rem}
+
+    main{position:relative; z-index:2; padding:18px; max-width:1100px; margin:18px auto 80px}
+
+    .grid{display:grid; grid-template-columns:1fr 420px; gap:22px}
+    @media (max-width:980px){ .grid{grid-template-columns:1fr; } }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+      border-radius:12px; padding:20px; box-shadow:0 10px 30px rgba(2,6,23,0.6);
+      border:1px solid rgba(255,255,255,0.04);
+    }
+
+    h1{margin:8px 0 6px; font-size:1.6rem}
+    p.lead{color:var(--muted); margin-top:0}
+
+    /* form styles */
+    form{display:block}
+    label{display:block; font-size:0.95rem; margin-bottom:6px}
+    .row{display:flex; gap:10px}
+    .col{flex:1}
+    input[type=text], input[type=password], input[type=email], input[type=url], input[type=date], select, textarea{
+      width:100%; padding:10px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.06);
+      background:transparent; color:var(--text); outline:none; font:inherit; box-shadow:inset 0 1px 0 rgba(255,255,255,0.02);
+    }
+    textarea{min-height:110px; resize:vertical}
+    .help{font-size:0.85rem;color:var(--muted); margin-top:6px}
+
+    .controls{display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:12px}
+    .btn{background:linear-gradient(90deg,var(--accent),var(--accent2)); color:#04111a; padding:10px 14px; border-radius:8px; border:none; cursor:pointer; font-weight:600}
+    .btn.ghost{background:transparent; border:1px solid rgba(255,255,255,0.08); color:var(--text)}
+
+    /* checkboxes & radios */
+    .choices{display:flex; gap:12px; align-items:center; flex-wrap:wrap}
+    .choice{display:flex; gap:8px; align-items:center}
+    input[type=checkbox], input[type=radio]{width:16px;height:16px}
+
+    /* small meta box */
+    .meta{font-size:0.9rem;color:var(--muted)}
+
+    /* image button style fallback */
+    input[type=image]{border-radius:8px; border:1px solid rgba(255,255,255,0.06)}
+
+    /* validation feedback */
+    .error{color:#ffb4b4; font-size:0.9rem; margin-top:8px}
+    input:invalid, textarea:invalid, select:invalid{ box-shadow: 0 0 0 3px rgba(255,90,90,0.03) }
+
+    footer{position:fixed; left:0; right:0; bottom:6px; z-index:2; text-align:center; color:var(--muted); font-size:0.85rem}
+
+    /* reduce animation for prefers-reduced-motion */
+    @media (prefers-reduced-motion: reduce){ .sky .star, .stars-layer{ animation:none } }
+  </style>
+</head>
+<body>
+
+  <div class="sky" aria-hidden="true">
+    <div class="stars-layer"></div>
+    <!-- 12 shooting stars -->
+    <div class="star star--1" aria-hidden="true"></div>
+    <div class="star star--2" aria-hidden="true"></div>
+    <div class="star star--3" aria-hidden="true"></div>
+    <div class="star star--4" aria-hidden="true"></div>
+    <div class="star star--5" aria-hidden="true"></div>
+    <div class="star star--6" aria-hidden="true"></div>
+    <div class="star star--7" aria-hidden="true"></div>
+    <div class="star star--8" aria-hidden="true"></div>
+    <div class="star star--9" aria-hidden="true"></div>
+    <div class="star star--10" aria-hidden="true"></div>
+    <div class="star star--11" aria-hidden="true"></div>
+    <div class="star star--12" aria-hidden="true"></div>
+  </div>
+
+  <header>
+    <div class="logo" aria-hidden="true">
+      <!-- simple car SVG -->
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M3 12l1.5-4.5A2 2 0 0 1 6.4 6h11.2a2 2 0 0 1 1.9 1.5L21 12v4a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-1H7v1a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-4z" fill="white" opacity="0.95"/>
+      </svg>
+    </div>
+    <div>
+      <div class="brand">Car Galaxy</div>
+      <div class="meta">Cars • Reviews • Customization</div>
+    </div>
+  </header>
+
+  <main>
+    <div class="grid">
+      <section class="card" aria-labelledby="formTitle">
+        <h1 id="formTitle">Join the Car Galaxy</h1>
+        <p class="lead">Tell us about your ride and preferences. This form includes client-side validation (required fields are marked).</p>
+
+        <form id="carForm" novalidate>
+
+          <fieldset>
+            <legend>Account & contact</legend>
+
+            <label for="fullName">Full name <span aria-hidden="true">*</span></label>
+            <input id="fullName" name="fullName" type="text" placeholder="Jane Doe" required />
+
+            <div class="row" style="margin-top:10px">
+              <div class="col">
+                <label for="email">Email address <span aria-hidden="true">*</span></label>
+                <input id="email" name="email" type="email" placeholder="you@example.com" required />
+                <div class="help">We'll send a verification email.</div>
+              </div>
+              <div class="col">
+                <label for="website">Website (optional)</label>
+                <input id="website" name="website" type="url" placeholder="https://example.com" />
+              </div>
+            </div>
+
+            <div style="margin-top:10px" class="row">
+              <div class="col">
+                <label for="password">Password <span aria-hidden="true">*</span></label>
+                <input id="password" name="password" type="password" minlength="8" pattern="^(?=.*[A-Za-z])(?=.*\d).+$" placeholder="At least 8 characters, include a number" required />
+                <div class="help">Minimum 8 chars, must include letters and numbers.</div>
+              </div>
+              <div class="col">
+                <label for="dob">Date of birth</label>
+                <input id="dob" name="dob" type="date" />
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset style="margin-top:14px">
+            <legend>Car preferences</legend>
+
+            <label for="carMake">Preferred car brand</label>
+            <select id="carMake" name="carMake" required>
+              <option value="">Choose a brand...</option>
+              <option>Ferrari</option>
+              <option>Lamborghini</option>
+              <option>Toyota</option>
+              <option>Tesla</option>
+              <option>BMW</option>
+              <option>Other</option>
+              <option>Porshe</option>
+              <option>Honda</option>
+            </select>
+
+            <div style="margin-top:12px">
+              <label>Car types you like (choose all that apply)</label>
+              <div class="choices" role="group" aria-label="Car types">
+                <label class="choice"><input type="checkbox" name="types" value="sports"> Sports</label>
+                <label class="choice"><input type="checkbox" name="types" value="suv"> SUV</label>
+                <label class="choice"><input type="checkbox" name="types" value="sedan"> Sedan</label>
+                <label class="choice"><input type="checkbox" name="types" value="electric"> Electric</label>
+              </div>
+            </div>
+
+            <div style="margin-top:12px">
+              <label>Transmission</label>
+              <div class="choices" role="radiogroup" aria-label="Transmission type">
+                <label class="choice"><input type="radio" name="trans" value="auto" required> Automatic</label>
+                <label class="choice"><input type="radio" name="trans" value="manual"> Manual</label>
+              </div>
+            </div>
+
+            <div style="margin-top:12px">
+              <label for="features">Features (multi-select)</label>
+              <select id="features" name="features" multiple size="4">
+                <option value="sunroof">Sunroof</option>
+                <option value="leather">Leather seats</option>
+                <option value="sound">Premium sound</option>
+                <option value="safety">Advanced safety</option>
+              </select>
+              <div class="help">Hold Ctrl (Cmd) to select multiple on desktop.</div>
+            </div>
+
+            <div style="margin-top:12px">
+              <label for="budget">Desired budget (USD)</label>
+              <input id="budget" name="budget" type="text" inputmode="numeric" pattern="^\d{1,9}$" placeholder="e.g. 50000" />
+            </div>
+
+          </fieldset>
+
+          <fieldset style="margin-top:14px">
+            <legend>About your ride</legend>
+
+            <label for="message">Describe your car / dream build</label>
+            <textarea id="message" name="message" placeholder="Tell us about your car..." required></textarea>
+
+          </fieldset>
+
+          <div style="margin-top:12px" class="controls">
+            <!-- standard submit -->
+            <button type="submit" class="btn">Submit</button>
+
+            <!-- image submit button (input type=image) using inline SVG data URI -->
+            <input type="image" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='36' viewBox='0 0 120 36'><rect rx='8' width='120' height='36' fill='%23ff7a18'/><text x='60' y='22' font-size='14' text-anchor='middle' fill='%2304111a' font-family='Arial'>Send</text></svg>" alt="Send form" title="Send" />
+
+            <!-- reset -->
+            <button type="reset" class="btn ghost">Reset</button>
+
+            <div style="margin-left:auto; text-align:right;">
+              <div class="meta">Required fields are validated. <span id="status" style="display:block"></span></div>
+            </div>
+          </div>
+
+        </form>
+      </section>
+
+      <aside class="card" aria-labelledby="aboutTitle">
+        <h2 id="aboutTitle">About this demo</h2>
+        <p class="meta">A car-themed site with a moving shooting star background. The form demonstrates: labeled controls, grouped fieldsets, required fields, pattern/minlength validation, date/email/url inputs, multi-select and an image submit button.</p>
+
+        <h3 style="margin-top:14px">Preview</h3>
+        <div style="display:grid; gap:8px; margin-top:8px">
+          <div style="background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:8px; border-radius:8px">Car image (decorative)</div>
+          <div class="help">Tip: open this file in your browser and try submitting the form. This demo prevents actual navigation and shows a success message instead.</div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer>Designed with ✨ for car lovers — demo form (no data sent)</footer>
+
+  <script>
+    // Basic client-side validation handling and friendly messages
+    (function(){
+      const form = document.getElementById('carForm');
+      const status = document.getElementById('status');
+
+      form.addEventListener('submit', function(e){
+        e.preventDefault(); // demo only — don't actually post
+
+        // check validity
+        if(!form.checkValidity()){
+          // find first invalid element and focus
+          const firstInvalid = form.querySelector(':invalid');
+          firstInvalid.focus();
+
+          // show browser validation messages where supported
+          status.textContent = 'Please fix the highlighted fields.';
+          status.style.color = '#ffb4b4';
+          return;
+        }
+
+        // Collect data and show a success message
+        const data = new FormData(form);
+        const obj = {};
+        for(const [k,v] of data.entries()){
+          // handle multiple select or checkboxes later
+          if(obj[k]){
+            if(Array.isArray(obj[k])) obj[k].push(v); else obj[k]=[obj[k],v];
+          } else obj[k]=v;
+        }
+
+        // also collect checked checkboxes properly
+        const types = Array.from(form.querySelectorAll('input[name="types"]:checked')).map(i=>i.value);
+        if(types.length) obj.types = types;
+
+        const features = Array.from(form.querySelectorAll('#features option:checked')).map(o=>o.value);
+        if(features.length) obj.features = features;
+
+        console.log('Form submission (demo):', obj);
+        status.textContent = 'Thanks — your response was received (demo).';
+        status.style.color = '#b7ffd4';
+
+        // small visual effect to reinforce submission
+        const btn = form.querySelector('button[type=submit]');
+        btn.textContent = 'Sent ✓';
+        btn.disabled = true;
+        setTimeout(()=>{ btn.textContent='Submit'; btn.disabled=false; status.textContent=''; form.reset(); }, 2200);
+      });
+
+      // Enhance password field custom validation
+      const pwd = document.getElementById('password');
+      pwd.addEventListener('input', ()=>{
+        if(pwd.validity.patternMismatch){ pwd.setCustomValidity('Password must include letters and numbers.'); }
+        else if(pwd.validity.tooShort){ pwd.setCustomValidity('Password is too short.'); }
+        else pwd.setCustomValidity('');
+      });
+
+    })();
+  </script>
+</body>
+</html>
